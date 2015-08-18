@@ -44,6 +44,10 @@ import android.widget.Toast;
 import android.widget.SeekBar;
 
 import com.example.android.common.logger.Log;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -157,7 +161,6 @@ public class BluetoothChatFragment extends Fragment {
         //scratch
         mSendSeekBar = (SeekBar) view.findViewById(R.id.seekBar);
     }
-
     /**
      * Set up the UI and background operations for chat.
      */
@@ -217,11 +220,13 @@ public class BluetoothChatFragment extends Fragment {
      * @param message A string of text to send.
      */
     private void sendMessage(String message) {
+
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
+
 
         // Check that there's actually something to send
         if (message.length() > 0) {
@@ -234,7 +239,40 @@ public class BluetoothChatFragment extends Fragment {
             Log.d(TAG,"Send Message -> " + get);
 
             byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+            /*
+            byte[] command0(float duty){
+                byte[] command = new byte[10];
+                int int_duty;
+                int duty_L;
+                int duty_H;
 
+                int_duty = (int)(duty * 32767.0);
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                //ヘッダー
+                command[0] =  99;
+                command[1] = 109;
+                command[2] = 100;
+                //id
+                command[3] =   0;
+                //値
+                command[4] = byte(duty_L);
+                command[5] = byte(duty_H);
+                //ダミー
+                command[6] = 0;
+                command[7] = 0;
+                command[8] = 0;
+                command[9] = 0;
+                return command;
+            }
+            */
+
+        //たくさんのコマンドをつくる
             if(get.equals("on")){
                 //byte[] mSend = {99,109,100,1,1,0,0,0,0,0};
                 mSend[3] = 1;
@@ -249,21 +287,572 @@ public class BluetoothChatFragment extends Fragment {
                 Log.d(TAG,"Set mSend -> "+mSend);
                 mChatService.write(mSend);
             }
-            if(get.equals("100")){
+            //max 正転
+            if(get.equals("555")){
                 //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = 32767;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
                 mSend[3] = 0;
-                mSend[4] = 100;
-                mSend[5] = 100;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
                 Log.d(TAG,"Set mSend -> "+mSend);
                 mChatService.write(mSend);
             }
+            //normal 正転
+            if(get.equals("55")){
+                //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = 24000;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                mSend[3] = 0;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
+                Log.d(TAG,"Set mSend -> "+mSend);
+                mChatService.write(mSend);
+            }
+            //slow 正転
+            if(get.equals("5")){
+                //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = 18000;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                mSend[3] = 0;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
+                Log.d(TAG,"Set mSend -> "+mSend);
+                mChatService.write(mSend);
+            }
+            //max 逆転
+            if(get.equals("777")){
+                //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = -32767;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                mSend[3] = 0;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
+                Log.d(TAG,"Set mSend -> "+mSend);
+                mChatService.write(mSend);
+            }
+            //normal 逆転
+            if(get.equals("77")){
+                //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = -24000;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                mSend[3] = 0;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
+                Log.d(TAG,"Set mSend -> "+mSend);
+                mChatService.write(mSend);
+            }
+            //slow 逆転
+            if(get.equals("7")){
+                //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
+                int int_duty = -18000;
+                int duty_L;
+                int duty_H;
+                if(int_duty<0)
+                {
+                    int_duty += 65535;
+                }
+                duty_L = int_duty & 0x000000ff ;
+                duty_H = (int_duty & 0x0000ff00)>>8;
+
+                mSend[3] = 0;
+                mSend[4] = (byte)duty_L;
+                mSend[5] = (byte)duty_H;
+                Log.d(TAG,"Set mSend -> "+mSend);
+                mChatService.write(mSend);
+            }
+            //停止
             if(get.equals("0")){
                 //byte[] mSend = {99,109,100,1,0,0,0,0,0,0};
                 mSend[3] = 0;
                 mSend[4] = 0;
                 mSend[5] = 0;
-                Log.d(TAG,"Set mSend -> "+mSend);
+                Log.d(TAG, "Set mSend -> " + mSend);
                 mChatService.write(mSend);
+            }
+
+            //一つのコマンドでいろんな演出 その１
+            if(get.equals("dance")){
+                Runnable func= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func, 0);
+
+                Runnable func2= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -24000;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func2, 22000);
+
+                Runnable func3= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 24000;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func3, 30000);
+
+                Runnable func4= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -17000;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func4, 38000);
+
+                Runnable func5= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = 0;
+                        mSend[5] = 0;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func5, 50000);
+
+                Runnable func6= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func6, 55000);
+                Runnable func7= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func7, 69000);
+                Runnable func8= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = 0;
+                        mSend[5] = 0;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func8, 91000);
+
+            }
+            //一つのコマンドでいろんな演出 その２
+            if(get.equals("shake")) {
+                Runnable func= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = 0;
+                        mSend[5] = 0;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func, 0);
+
+                Runnable func2= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func2, 1000);
+
+                Runnable func3= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func3, 1500);
+
+                Runnable func4= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func4, 2000);
+
+                Runnable func5= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func5, 2500);
+
+                Runnable func6= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func6, 3000);
+
+                Runnable func7= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func7, 5000);
+
+                Runnable func8= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func8, 6000);
+
+                Runnable func9= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func9, 7000);
+
+                Runnable func10= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = -32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func10, 8500);
+
+                Runnable func11= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = (byte)duty_L;
+                        mSend[5] = (byte)duty_H;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func11, 9500);
+
+                Runnable func12= new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] mSend = {99,109,100,0,0,0,0,0,0,0};
+                        int int_duty = 32767;
+                        int duty_L;
+                        int duty_H;
+                        if(int_duty<0)
+                        {
+                            int_duty += 65535;
+                        }
+                        duty_L = int_duty & 0x000000ff ;
+                        duty_H = (int_duty & 0x0000ff00)>>8;
+                        mSend[3] = 0;
+                        mSend[4] = 0;
+                        mSend[5] = 0;
+                        Log.d(TAG, "Set mSend -> " + mSend);
+                        mChatService.write(mSend);
+                    }
+                };
+                new Handler().postDelayed(func12, 10500);
             }
             //mSend = {0,0,0,0,0,0,0,0,0,0};
             //mChatService.write(mSend);
@@ -272,7 +861,11 @@ public class BluetoothChatFragment extends Fragment {
             mOutStringBuffer.setLength(0);
             mOutEditText.setText(mOutStringBuffer);
         }
+
     }
+
+
+
 
     /**
      * The action listener for the EditText widget, to listen for the return key
